@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export class GeminiService {
-  private genAI?: GoogleGenerativeAI;
-  private isConfigured = false;
+  genAI = undefined;
+  isConfigured = false;
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -21,7 +21,7 @@ export class GeminiService {
     }
   }
 
-async generateContent(prompt: string, retries = 2): Promise<{ summary: string; links: string[]; videos: string[] }> {
+async generateContent(prompt, retries = 2) {
   if (!this.isConfigured || !this.genAI) {
     throw new Error("Gemini service not configured");
   }
@@ -43,7 +43,7 @@ async generateContent(prompt: string, retries = 2): Promise<{ summary: string; l
       links: [],   
       videos: []   
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("Gemini error:", err?.message ?? err);
 
     const msg = err?.message ?? String(err);

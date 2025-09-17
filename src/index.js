@@ -53,7 +53,7 @@ app.get("/health/news", async (_req, res) => {
     
     res.json(healthInfo);
   } catch (error) {
-    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : String(error);
+    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? error.message : String(error);
     console.error("❌ News health check failed:", errorMessage);
     res.status(500).json({ 
       status: 'error', 
@@ -88,7 +88,7 @@ app.get("/health/system", async (_req, res) => {
         systemHealth.services.firebase = true;
       }
     } catch (fbError) {
-      console.warn("Firebase health check failed:", typeof fbError === 'object' && fbError !== null && 'message' in fbError ? (fbError as { message: string }).message : String(fbError));
+      console.warn("Firebase health check failed:", typeof fbError === 'object' && fbError !== null && 'message' in fbError ? fbError.message : fbError);
     }
     
     // Check News APIs availability
@@ -106,7 +106,7 @@ app.get("/health/system", async (_req, res) => {
     res.json(systemHealth);
     
   } catch (error) {
-    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : String(error);
+    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? error.message : String(error);
     console.error("❌ System health check failed:", errorMessage);
     res.status(500).json({ 
       status: 'error', 
@@ -133,7 +133,7 @@ app.get("/health/network", async (_req, res) => {
       diagnostics
     });
   } catch (error) {
-    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : String(error);
+    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? error.message : String(error);
     console.error("❌ Network diagnostics failed:", errorMessage);
     res.status(500).json({ 
       status: 'error', 
@@ -149,7 +149,7 @@ app.use("/ai", verifyFirebaseToken, apiSlowdown, apiLimiter, aiRouter);
 
 
 
-app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+app.use((err, req, res, next) => {
   console.error("💥 Global error:", err);
   
   // Handle specific error types
@@ -194,7 +194,7 @@ logStartupBanner().then(() => {
     
     // Run full network diagnostics after a short delay
     setTimeout(() => {
-      runNetworkDiagnostics().catch((error: unknown) => {
+      runNetworkDiagnostics().catch((error) => {
         console.error('❌ Network checks failed:', error instanceof Error ? error.message : String(error));
       });
     }, 3000);
