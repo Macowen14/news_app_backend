@@ -16,9 +16,14 @@ export type NormalizedArticle = {
 export async function fetchCategoryNews(category: string): Promise<NormalizedArticle[]> {
   const cacheKey = `news:${category}`;
   const cached = cache.get(cacheKey);
-  if (cached) return cached as NormalizedArticle[];
+  if (cached) {
+    console.log(`📦 Cache hit for ${category}: ${cached.length} articles`);
+    return cached as NormalizedArticle[];
+  }
 
+  console.log(`🔄 Fetching fresh news for category: ${category}`);
   let providers: Promise<NormalizedArticle[]>[] = [];
+  
   switch (category.toLowerCase()) {
     case "crypto":
       providers = [fetchCryptoPanic(), fetchGNews("technology")];
@@ -35,12 +40,24 @@ export async function fetchCategoryNews(category: string): Promise<NormalizedArt
       providers = [fetchGNews("technology")];
   }
 
+  console.log(`🔍 Using ${providers.length} providers for ${category}`);
   const results = await Promise.allSettled(providers);
+  
   const articles = results
-    .flatMap((r) => (r.status === "fulfilled" ? r.value : []))
+    .flatMap((r, index) => {
+      if (r.status === "fulfilled") {
+        console.log(`✅ Provider ${index + 1} returned ${r.value.length} articles`);
+        return r.value;
+      } else {
+        console.error(`❌ Provider ${index + 1} failed:`, r.reason);
+        return [];
+      }
+    })
     .filter((a) => a && a.title && a.url);
 
   const deduped = dedupeByUrl(articles).slice(0, 30);
+  console.log(`📊 Final result: ${deduped.length} unique articles for ${category}`);
+  
   cache.set(cacheKey, deduped, 60_000);
   return deduped;
 }
