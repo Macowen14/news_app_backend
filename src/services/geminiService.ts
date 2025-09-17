@@ -1,4 +1,3 @@
-// src/services/aiService.ts
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export class GeminiService {
