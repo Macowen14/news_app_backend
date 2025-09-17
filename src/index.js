@@ -8,7 +8,6 @@ import {  verifyFirebaseToken } from "./middlewares/auth.js";
 import { checkEnvironmentSetup } from "./utils/environmentChecker.js";
 import { runNetworkDiagnostics, quickNetworkTest } from "./utils/networkDiagnostics.js";
 // Global error handler
-import { Request, Response, NextFunction } from "express";
 
 const app = express();
 

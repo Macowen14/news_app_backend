@@ -1,9 +1,9 @@
 import rateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
-import type { Request } from "express";
 
-function keyGenerator(req: Request) {
-  const userId = (req as any).user?.uid;
+
+function keyGenerator(req) {
+  const userId = (req).user?.uid;
   const ip = req.ip;
   return userId ? `u:${userId}` : `ip:${ip}`;
 }

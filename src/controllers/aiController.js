@@ -1,5 +1,4 @@
 // src/controllers/aiController.ts
-import { Request, Response } from "express";
 import { geminiService } from "../services/geminiService.js";
 
 export async function aiSearchController(req, res) {

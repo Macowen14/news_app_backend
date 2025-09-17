@@ -1,7 +1,7 @@
 import axios from "axios";
-import type { NormalizedArticle } from "../newsService.js";
 
-export async function fetchCryptoPanic(): Promise<NormalizedArticle[]> {
+
+export async function fetchCryptoPanic() {
   const token = process.env.CRYPTOPANIC_TOKEN;
   if (!token) return [];
   try {
@@ -9,7 +9,7 @@ export async function fetchCryptoPanic(): Promise<NormalizedArticle[]> {
       params: { auth_token: token, kind: "news", public: true }
     });
     const results = Array.isArray(data?.results) ? data.results : [];
-    return results.map((r: any) => ({
+    return results.map((r) => ({
       id: `cp-${r.id}`,
       title: r.title,
       description: r.domain,

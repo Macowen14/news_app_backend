@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
 import { fetchCategoryNews } from "../services/newsService.js";
 
-export async function getCategoryNewsController(req: Request, res: Response) {
+export async function getCategoryNewsController(req, res) {
   const startTime = Date.now();
   const { category } = req.params;
   
@@ -64,7 +63,7 @@ export async function getCategoryNewsController(req: Request, res: Response) {
     
     res.json(response);
     
-  } catch (err: any) {
+  } catch (err) {
     const duration = Date.now() - startTime;
     
     console.error(`❌ News controller error for ${category}:`, {

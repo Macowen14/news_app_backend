@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "nodemon src/index.ts",
     "start": "node src/index.js",
-    "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
-    "test-api":"node src/test-gemini.js"
+    "test-api": "node src/test-gemini.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -27,13 +26,13 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.16.11",
     "eslint": "^9.11.1",
+    "nodemon": "^3.1.10",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   },
   "rules": {
-  "import/no-unresolved": "error",
-  "import/no-named-as-default": "off",
-  "import/no-named-as-default-member": "off"
-}
-
+    "import/no-unresolved": "error",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off"
+  }
 }

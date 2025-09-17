@@ -1,14 +1,7 @@
 // src/middleware/authMiddleware.ts
-import type { Request, Response, NextFunction } from "express";
 import admin from "firebase-admin";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: admin.auth.DecodedIdToken;
-    }
-  }
-}
+// Removed TypeScript-specific global declaration for Express.Request
 
 let initialized = false;
 try {
@@ -31,7 +24,7 @@ try {
   initialized = false;
 }
 
-export const verifyFirebaseToken = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyFirebaseToken = async (req, res, next) => {
   const requestId = Date.now().toString(36);
   try {
     if (!initialized) {
@@ -60,7 +53,7 @@ export const verifyFirebaseToken = async (req: Request, res: Response, next: Nex
       console.log(`[${requestId}] token verified (${verifyMs}ms) for uid=${decoded.uid}`);
       req.user = decoded;
       return next();
-    } catch (verifyErr: any) {
+    } catch (verifyErr) {
       // Translate firebase admin errors to appropriate HTTP codes
       let status = 401;
       let message = "Invalid authentication token";
@@ -77,7 +70,7 @@ export const verifyFirebaseToken = async (req: Request, res: Response, next: Nex
       console.error(`[${requestId}] Token verification failed:`, verifyErr.code || verifyErr.message);
       return res.status(status).json({ error: message, code: verifyErr.code });
     }
-  } catch (e: any) {
+  } catch (e) {
     console.error(`[${requestId}] Unexpected auth middleware error:`, e);
     return res.status(500).json({ error: "Authentication middleware error" });
   }

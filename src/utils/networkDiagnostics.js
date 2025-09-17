@@ -1,49 +1,19 @@
 // utils/networkDiagnostics.ts
 import dns from 'dns';
 import { promisify } from 'util';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 const dnsLookup = promisify(dns.lookup);
 const dnsResolve = promisify(dns.resolve);
 
-interface DnsResult {
-  success: boolean;
-  ip?: string;
-  family?: number;
-  error?: string;
-}
 
-interface ConnectivityResult {
-  success: boolean;
-  status?: number;
-  duration?: string;
-  error?: string;
-}
-
-interface ApiResult {
-  success: boolean;
-  status?: number;
-  articlesCount?: number;
-  error?: string;
-}
-
-interface DiagnosticResults {
-  timestamp: string;
-  dns: Record<string, DnsResult>;
-  connectivity: Record<string, ConnectivityResult>;
-  apis: {
-    gnews?: ApiResult;
-    cryptopanic?: ApiResult;
-  };
-}
-
-export async function runNetworkDiagnostics(): Promise<DiagnosticResults> {
+export async function runNetworkDiagnostics() {
   console.log(`\n${'='.repeat(50)}`);
   console.log(`🔍 NETWORK DIAGNOSTICS`);
   console.log(`⏰ ${new Date().toISOString()}`);
   console.log(`${'='.repeat(50)}`);
 
-  const results: DiagnosticResults = {
+  const results = {
     timestamp: new Date().toISOString(),
     dns: {},
     connectivity: {},
@@ -103,7 +73,7 @@ export async function runNetworkDiagnostics(): Promise<DiagnosticResults> {
   // Test GNews API
   if (process.env.GNEWS_API_KEY) {
     try {
-      const gnewsResponse: AxiosResponse = await axios.get('https://gnews.io/api/v4/top-headlines', {
+      const gnewsResponse = await axios.get('https://gnews.io/api/v4/top-headlines', {
         params: {
           token: process.env.GNEWS_API_KEY,
           topic: 'technology',
@@ -132,7 +102,7 @@ export async function runNetworkDiagnostics(): Promise<DiagnosticResults> {
   // Test CryptoPanic API
   if (process.env.CRYPTOPANIC_TOKEN) {
     try {
-      const cryptoResponse: AxiosResponse = await axios.get('https://cryptopanic.com/api/v1/posts/', {
+      const cryptoResponse= await axios.get('https://cryptopanic.com/api/v1/posts/', {
         params: {
           auth_token: process.env.CRYPTOPANIC_TOKEN,
           kind: 'news',
@@ -188,7 +158,7 @@ export async function runNetworkDiagnostics(): Promise<DiagnosticResults> {
 }
 
 // Quick network test function
-export async function quickNetworkTest(): Promise<boolean> {
+export async function quickNetworkTest() {
   try {
     const response = await axios.get('https://httpbin.org/ip', { timeout: 5000 });
     console.log(`🌐 Quick network test: ✅ Connected (IP: ${response.data?.origin})`);
@@ -201,7 +171,7 @@ export async function quickNetworkTest(): Promise<boolean> {
 }
 
 // Add this to your main server file to run diagnostics on startup
-export function runStartupDiagnostics(): void {
+export function runStartupDiagnostics() {
   // Run quick test immediately
   quickNetworkTest();
   

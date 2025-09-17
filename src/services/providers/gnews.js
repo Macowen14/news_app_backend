@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { NormalizedArticle } from "../newsService.js";
+
 
 // Create optimized axios instance for GNews
 const gnewsClient = axios.create({
@@ -11,7 +11,7 @@ const gnewsClient = axios.create({
   validateStatus: (status) => status < 500
 });
 
-export async function fetchGNews(category: string): Promise<NormalizedArticle[]> {
+export async function fetchGNews(category) {
   const apiKey = process.env.GNEWS_API_KEY;
   
   if (!apiKey || apiKey === 'your_gnews_api_key_here') {
@@ -53,18 +53,8 @@ export async function fetchGNews(category: string): Promise<NormalizedArticle[]>
       return [];
     }
     
-    // Define the expected GNews article structure
-    interface GNewsArticle {
-      title: string;
-      description?: string;
-      content?: string;
-      url: string;
-      image?: string;
-      source?: { name?: string } | string;
-      publishedAt?: string;
-    }
-
-    const articles: GNewsArticle[] = Array.isArray(data.articles) ? data.articles : [];
+    
+    const articles = Array.isArray(data.articles) ? data.articles : [];
     console.log(`📰 GNews returned ${articles.length} articles`);
     
     if (articles.length === 0) {
@@ -74,7 +64,7 @@ export async function fetchGNews(category: string): Promise<NormalizedArticle[]>
     
     // Process and normalize articles
     const normalizedArticles = articles
-      .filter((article: GNewsArticle) => 
+      .filter((article) => 
         article && 
         typeof article === 'object' &&
         article.title && 
@@ -84,7 +74,7 @@ export async function fetchGNews(category: string): Promise<NormalizedArticle[]>
         article.title.trim().length > 0 &&
         article.url.trim().length > 0
       )
-      .map((article: GNewsArticle, idx: number) => ({
+      .map((article, idx) => ({
         id: `gnews-${Buffer.from(article.url).toString('base64').slice(0, 10)}-${idx}`,
         title: article.title.trim(),
         description: article.description || article.content || undefined,
@@ -99,7 +89,7 @@ export async function fetchGNews(category: string): Promise<NormalizedArticle[]>
     
   } catch (error) {
     // Enhanced error handling with specific network issue detection
-    const err = error as any;
+    const err = error;
     if (err.code === 'ENOTFOUND' || err.code === 'EAI_AGAIN') {
       console.error(`🌐 GNews: DNS resolution failed - check internet connectivity`);
     } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
@@ -121,7 +111,7 @@ export async function fetchGNews(category: string): Promise<NormalizedArticle[]>
 }
 
 // Alternative news source as fallback
-export async function fetchHackerNews(): Promise<NormalizedArticle[]> {
+export async function fetchHackerNews(){
   try {
     console.log(`🔄 Fetching HackerNews as fallback...`);
     
@@ -131,7 +121,7 @@ export async function fetchHackerNews(): Promise<NormalizedArticle[]> {
     );
     
     const topStoryIds = topStoriesResponse.data.slice(0, 5);
-    const articles: NormalizedArticle[] = [];
+    const articles = [];
     
     for (const storyId of topStoryIds) {
       try {
@@ -162,7 +152,7 @@ export async function fetchHackerNews(): Promise<NormalizedArticle[]> {
     return articles;
     
   } catch (error) {
-    const err = error as { message?: string };
+    const err = error ;
     console.error(`❌ HackerNews fallback failed:`, err.message || error);
     return [];
   }

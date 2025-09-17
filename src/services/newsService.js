@@ -3,19 +3,10 @@ import { fetchGNews, fetchHackerNews } from "./providers/gnews.js";
 import { fetchCryptoPanic } from "./providers/cryptopanic.js";
 import { fetchPubMed } from "./providers/pubmed.js";
 
-export type NormalizedArticle = {
-  id: string;
-  title: string;
-  description?: string;
-  url: string;
-  imageUrl?: string;
-  source?: string;
-  publishedAt?: string;
-};
 
 // Mock articles for fallback when APIs are not configured or failing
-const getMockArticles = (category: string): NormalizedArticle[] => {
-  const mockArticles: NormalizedArticle[] = [
+const getMockArticles = (category) => {
+  const mockArticles = [
     {
       id: `mock-${category}-1`,
       title: `Latest ${category.charAt(0).toUpperCase() + category.slice(1)} News`,
@@ -45,13 +36,13 @@ const getMockArticles = (category: string): NormalizedArticle[] => {
   return mockArticles;
 };
 
-export async function fetchCategoryNews(category: string): Promise<NormalizedArticle[]> {
+export async function fetchCategoryNews(category) {
   const cacheKey = `news:${category}`;
   const cached = cache.get(cacheKey);
   
   if (cached) {
     console.log(`📦 Cache hit for ${category}: ${cached.length} articles`);
-    return cached as NormalizedArticle[];
+    return cached ;
   }
 
   console.log(`🔄 Fetching fresh news for category: ${category}`);
@@ -62,8 +53,8 @@ export async function fetchCategoryNews(category: string): Promise<NormalizedArt
   const pubmedAvailable = true; // PubMed is usually free
   
   console.log(`🔑 API Keys available - GNews: ${gnewsAvailable}, CryptoPanic: ${cryptopanicAvailable}, PubMed: ${pubmedAvailable}`);
-  
-  let providers: Array<{ name: string, promise: Promise<NormalizedArticle[]> }> = [];
+
+  let providers = [];
 
   switch (category.toLowerCase()) {
     case "crypto":
@@ -117,7 +108,7 @@ export async function fetchCategoryNews(category: string): Promise<NormalizedArt
 
   const results = await Promise.allSettled(providers.map(p => p.promise));
   
-  const articles: NormalizedArticle[] = [];
+  const articles = [];
   let successfulProviders = 0;
 
   results.forEach((result, index) => {
@@ -187,9 +178,9 @@ export async function fetchCategoryNews(category: string): Promise<NormalizedArt
   return deduped;
 }
 
-function dedupeByUrl(list: NormalizedArticle[]): NormalizedArticle[] {
-  const seen = new Set<string>();
-  const out: NormalizedArticle[] = [];
+function dedupeByUrl(list) {
+  const seen = new Set();
+  const out = [];
   
   for (const article of list) {
     const key = article.url.toLowerCase().trim();
