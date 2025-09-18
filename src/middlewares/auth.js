@@ -1,8 +1,6 @@
 // src/middleware/authMiddleware.ts
 import admin from "firebase-admin";
 
-// Removed TypeScript-specific global declaration for Express.Request
-
 let initialized = false;
 try {
   if (!admin.apps.length) {
